@@ -1,5 +1,3 @@
-import './App.css'
-
 // components
 import Welcome from './components/Welcome/Welcome';
 import Navbar from './components/Navbar/Navbar';

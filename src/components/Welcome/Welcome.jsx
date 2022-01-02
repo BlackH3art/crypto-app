@@ -11,6 +11,9 @@ import Input from './Input';
 import { TransactionContext } from '../../context/TransactionContext';
 import { ethers } from 'ethers';
 
+// utils
+import { shortenAddress } from '../../utils/shortenAddress';
+
 
 const Welcome = () => {
 
@@ -87,7 +90,7 @@ const Welcome = () => {
                 </div>
                 <div>
                   <p className='text-white font-light text-sm'>
-                    0xsf8d7s...899sd
+                    {shortenAddress(connectedAccount)}
                   </p>
                   <p className='text-white font-semibold text-lg mt-1'>
                     Ethereum

@@ -17,7 +17,8 @@ import { shortenAddress } from '../../utils/shortenAddress';
 
 const Welcome = () => {
 
-  const { connectWallet, connectedAccount, formData, handleChange, sendTransaction } = useContext(TransactionContext);
+  const { connectWallet, connectedAccount, formData, handleChange, sendTransaction, isLoading } = useContext(TransactionContext);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -107,7 +108,7 @@ const Welcome = () => {
 
               <div className="h-[1px] w-full bg-gray-400 my-2" />
 
-              {false ? (
+              {isLoading ? (
                 <Loading />
               ) : (
                 <button type="button" onClick={handleSubmit} className='text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer'>

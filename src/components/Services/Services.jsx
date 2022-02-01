@@ -19,7 +19,7 @@ const Services = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-start items-center">
+        <div className="flex-2 flex flex-col justify-start items-center">
           <ServiceCard 
             color="bg-[#2952E3]"
             title="Security Guaranteed"

@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 
 // components
 import Loading from '../Loading/Loading';
@@ -6,22 +6,36 @@ import Input from '../Welcome/Input';
 
 //context
 import { TransactionContext } from '../../context/TransactionContext';
+import { IcoContext } from '../../context/IcoContext';
+import { ethers } from 'ethers';
 
 const Ico = () => {
 
-  const { connectWallet, connectedAccount, formData, handleChange, sendTransaction, isLoading } = useContext(TransactionContext);
+  const { connectWallet, connectedAccount, isLoading } = useContext(TransactionContext);
+  const { 
+    handleChange, 
+    amountToInvest, 
+    invest, 
+    contractBalance, 
+    contractPrice, 
+    contractMaxAllocation, 
+    contractMaxInvestment, 
+    investor, 
+    errorMsg
+  } = useContext(IcoContext);
 
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
+    const { amount } = amountToInvest;
+    
+    if(!amount) return;
+
+    invest();
   }
 
-  // const handleChange = () => {
 
-  // }
-
-  const commonStyles = 'min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white';
-  
   return (
     <>
       <div className="flex w-full justify-center items-center">
@@ -50,20 +64,72 @@ const Ico = () => {
 
           <div className='flex flex-col flex-1 items-center justify-start w-full mf:mt-0 mt-10'>
 
-            <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
-              <Input placeholder="Amount (ETH)" name="amount" type="number" handleChange={handleChange} maximum={"0.1"}/>
-
-              <div className="h-[1px] w-full bg-gray-400 my-2" />
-
-              {isLoading ? (
-                <Loading />
-              ) : (
-                <button type="button" onClick={handleSubmit} className='text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer'>
-                  Invest
-                </button>
-              )}
+            <div className="p-5 text-white font-light sm:w-96 w-full flex flex-col justify-start blue-glassmorphism">
+              <p className='text-white text-base font-semibold'>
+                Details:
+              </p>
+              <br />
+              <table className="table-fixed">
+                <tbody>
+                  <tr>
+                    <td>Total supply:</td>
+                    <td>1.000.000 KYT</td>
+                  </tr>
+                  <tr>
+                    <td>Supply on sale:</td>
+                    <td>1.000.000 KYT</td>
+                  </tr>
+                  <tr>
+                    <td>Available amount:</td>
+                    <td>{contractBalance ? `${ethers.utils.formatEther(contractBalance)} KYT` : <Loading size={5}/>}</td>
+                  </tr>
+                  <tr>
+                    <td>Max allocation:</td>
+                    <td>{contractMaxAllocation ? `${ethers.utils.formatEther(contractMaxAllocation)} KYT` : <Loading size={5}/>} </td>
+                  </tr>
+                  <tr>
+                    <td>Max investment:</td>
+                    <td>{contractMaxInvestment ? `${ethers.utils.formatEther(contractMaxInvestment)} ETH` : <Loading size={5}/>}</td>
+                  </tr>
+                  <tr>
+                    <td>Public sale price:</td>
+                    <td>{contractPrice ? `${ethers.utils.formatEther(contractPrice)} ETH` : <Loading size={5}/>} </td>
+                  </tr>
+                </tbody>
+              </table>
 
             </div>
+            
+            {investor.account !== connectedAccount ? (
+              <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
+
+                {isLoading ? (
+                  <Loading />
+                ) : (
+                  <>
+                    {errorMsg && (
+                      <p className='text-left text-red-600 w-full text-sm'>
+                        {errorMsg}
+                      </p>
+                    )}
+                    <Input placeholder="Amount (ETH)" name="amount" type="number" handleChange={handleChange} maximum={"0.1"}/>
+      
+                    <div className="h-[1px] w-full bg-gray-400 my-2" />
+                  
+                    <button type="button" onClick={handleSubmit} className='text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer'>
+                      Invest
+                    </button>
+                  </>
+                )}
+
+              </div>
+            ) : (
+              <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
+
+                ALREADY INVESTED
+
+              </div>
+            )}
           </div>
 
         </div>

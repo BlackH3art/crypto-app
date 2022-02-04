@@ -113,7 +113,7 @@ export const TransactionProvider = ({ children }) => {
       const { addressTo, amount, keyword, message } = formData;
 
       const transactionContract = getEthereumContract();
-      const patsedAmount = ethers.utils.parseEther(amount);
+      const parsedEther = ethers.utils.parseEther(amount);
 
       await ethereum.request({
         method: 'eth_sendTransaction',
@@ -121,7 +121,7 @@ export const TransactionProvider = ({ children }) => {
           from: connectedAccount,
           to: addressTo,
           gas: '0x5208', // 21000 GWEI
-          value: patsedAmount._hex
+          value: parsedEther._hex
         }]
       });
 

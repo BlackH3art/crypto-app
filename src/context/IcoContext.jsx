@@ -5,12 +5,15 @@ import { contractIcoABI, contractIcoAddress } from '../utils/constants';
 import { TransactionContext } from './TransactionContext';
 import { isAmountValid } from '../utils/validateAmount';
 
+// from private folder
+import { RPC_LINK } from '../private/private';
+
 
 export const IcoContext = React.createContext();
 
 const { ethereum } = window;
 
-const getEthereumContract = () => {
+const getEthereumContractSigner = () => {
 
   const provider = new ethers.providers.Web3Provider(ethereum);
 
@@ -20,9 +23,19 @@ const getEthereumContract = () => {
   return icoContract;
 }
 
+const getEtherumContractProvider = () => {
+
+  const RPC = RPC_LINK;
+  const provider = new ethers.providers.JsonRpcProvider(RPC);
+  const icoContract = new ethers.Contract(contractIcoAddress, contractIcoABI, provider);
+
+  return icoContract;
+}
+
 export const IcoProvider = ({ children }) => {
 
-  const icoContract = getEthereumContract();
+  const icoContractSigner = getEthereumContractSigner();
+  const icoContractProvider = getEtherumContractProvider();
 
   const [amountToInvest, setAmountToInvest] = useState({ amount: "" });
   const [contractBalance, setContractBalance] = useState('');
@@ -40,7 +53,6 @@ export const IcoProvider = ({ children }) => {
     getIcoPrice();
     getMaxAlloaction();
     getMaxInvestment();
-    getInvestor();
   }, []);
 
   const handleChange = (e, name) => {
@@ -66,66 +78,49 @@ export const IcoProvider = ({ children }) => {
       
       if(!ethereum) return alert("You need metamask");
       if(!connectedAccount) return alert("Connect your wallet");
+      
 
       setIsLoading(true);
 
-
-      const transactionHash = await icoContract.invest({
+      const transactionHash = await icoContractSigner.invest({
         value: ethers.utils.parseEther(amount)._hex
       });
 
       await transactionHash.wait();
-      console.log('transaction hash --> ', transactionHash);
 
-
-      // 1. sprawdzić czy jest już inwestorem.
-      const userInvested = await icoContract.investors(connectedAccount);
+      const userInvested = await icoContractSigner.investors(connectedAccount);
       setInvestor(userInvested);
-      console.log('investor --> ', userInvested.account);
 
-      // 2. sprawdzić balans KYT
+      await getContractBalance();
+
       setIsLoading(false);
       
 
     } catch (error) {
-      console.log(error);
 
       throw new Error("No ethereum object");
     }
   }
 
-  // 1. udało się zainwestować. 
-  // 2. podczas oczekiwania na transakcję nie wyświetlał się loader.
-  // 3. stan aplikacji po zainwestowaniu się nie odświeżył.
-  // 4. na zainwestowanym koncie aplikacja dalej wyświetla input
-
   const getContractBalance = async () => {
-    setContractBalance(await icoContract.amount());
+    setContractBalance(await icoContractProvider.amount());
   }
 
   const getIcoPrice = async () => {
-    setContractPrice(await icoContract.price());
+    setContractPrice(await icoContractProvider.price());
   }
 
   const getMaxAlloaction = async () => {
-    setContractMaxAllocation(await icoContract.maxAllocation());
+    setContractMaxAllocation(await icoContractProvider.maxAllocation());
   }
 
   const getMaxInvestment = async () => {
-    setContractMaxInvestment(await icoContract.maxInvestment());
+    setContractMaxInvestment(await icoContractProvider.maxInvestment());
   }
 
   const getInvestor = async () => {
-
-    connectedAccount && setInvestor(await icoContract.investors(connectedAccount));
+    setInvestor(await icoContractProvider.investors(connectedAccount));
   }
-
-  // console.log({
-  //   contractBalance,
-  //   contractIcoAddress,
-  //   contractMaxAllocation,
-  //   contractPrice
-  // });
 
   return (
     <IcoContext.Provider value={{
@@ -138,7 +133,9 @@ export const IcoProvider = ({ children }) => {
       contractMaxAllocation,
       contractMaxInvestment,
       investor,
-      errorMsg
+      errorMsg,
+      getInvestor,
+
     }}>
       {children}
     </IcoContext.Provider>

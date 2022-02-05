@@ -1,10 +1,16 @@
-const Loading = ({ size }) => {
+const Loading = ({ small }) => {
 
   return (
     <>
-      <div className="flex justify-center items-center py-3">
-        <div className={`animate-spin rounded-full h-${size} w-${size} border-b-2 border-red-700`} />
-      </div>
+      {small ? (
+        <div className="flex justify-center items-center py-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-700" />
+        </div>  
+      ) : (
+        <div className="flex justify-center items-center py-3">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-700" />
+        </div>
+      )}
     </>
   )
 }

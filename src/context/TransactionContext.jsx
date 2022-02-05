@@ -48,7 +48,8 @@ export const TransactionProvider = ({ children }) => {
       setTransactions(structuredTransactions);
 
     } catch (error) {
-      console.log(error);
+
+      throw new Error('Problem to get transactions')
     }
   }
 
@@ -68,7 +69,6 @@ export const TransactionProvider = ({ children }) => {
         console.log('No accounts');
       }
     } catch (error) {
-      console.error(error);
 
       throw new Error('No Ethereum object');
     }
@@ -81,7 +81,6 @@ export const TransactionProvider = ({ children }) => {
 
       window.localStorage.setItem('transactionCount', transactionCount);
     } catch (error) {
-      console.log(error);
 
       throw new Error('no ethereum object');
     }
@@ -109,7 +108,6 @@ export const TransactionProvider = ({ children }) => {
     try {
       if(!ethereum) return alert("You need metamask");
 
-      // get the data
       const { addressTo, amount, keyword, message } = formData;
 
       const transactionContract = getEthereumContract();
@@ -125,7 +123,7 @@ export const TransactionProvider = ({ children }) => {
         }]
       });
 
-      const transactionHash = await transactionContract.addToBlockchain(addressTo, patsedAmount, message, keyword);
+      const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedEther, message, keyword);
       setIsLoading(true);
 
       await transactionHash.wait();

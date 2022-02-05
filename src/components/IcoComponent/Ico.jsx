@@ -11,7 +11,7 @@ import { ethers } from 'ethers';
 
 const Ico = () => {
 
-  const { connectWallet, connectedAccount, isLoading } = useContext(TransactionContext);
+  const { connectWallet, connectedAccount } = useContext(TransactionContext);
   const { 
     handleChange, 
     amountToInvest, 
@@ -21,9 +21,20 @@ const Ico = () => {
     contractMaxAllocation, 
     contractMaxInvestment, 
     investor, 
-    errorMsg
+    errorMsg, 
+    isLoading,
+    getInvestor,
   } = useContext(IcoContext);
+  const [investorLoading, setInvestorLoading] = useState(true);
 
+  const connectedAccountIsInvestor = investor[0]?.toLowerCase() !== connectedAccount?.toLowerCase();
+
+  useEffect(() => {
+    getInvestor();
+    setTimeout(() => {
+      setInvestorLoading(false);
+    }, 1000);
+  },[]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,6 +42,8 @@ const Ico = () => {
     const { amount } = amountToInvest;
     
     if(!amount) return;
+    if(!connectedAccount) return;
+    if(!connectedAccountIsInvestor) return;
 
     invest();
   }
@@ -81,55 +94,86 @@ const Ico = () => {
                   </tr>
                   <tr>
                     <td>Available amount:</td>
-                    <td>{contractBalance ? `${ethers.utils.formatEther(contractBalance)} KYT` : <Loading size={5}/>}</td>
+                    <td>{contractBalance ? `${ethers.utils.formatEther(contractBalance)} KYT` : <Loading small/>}</td>
                   </tr>
                   <tr>
                     <td>Max allocation:</td>
-                    <td>{contractMaxAllocation ? `${ethers.utils.formatEther(contractMaxAllocation)} KYT` : <Loading size={5}/>} </td>
+                    <td>{contractMaxAllocation ? `${ethers.utils.formatEther(contractMaxAllocation)} KYT` : <Loading small/>} </td>
                   </tr>
                   <tr>
                     <td>Max investment:</td>
-                    <td>{contractMaxInvestment ? `${ethers.utils.formatEther(contractMaxInvestment)} ETH` : <Loading size={5}/>}</td>
+                    <td>{contractMaxInvestment ? `${ethers.utils.formatEther(contractMaxInvestment)} ETH` : <Loading small/>}</td>
                   </tr>
                   <tr>
                     <td>Public sale price:</td>
-                    <td>{contractPrice ? `${ethers.utils.formatEther(contractPrice)} ETH` : <Loading size={5}/>} </td>
+                    <td>{contractPrice ? `${ethers.utils.formatEther(contractPrice)} ETH` : <Loading small/>} </td>
                   </tr>
                 </tbody>
               </table>
 
             </div>
             
-            {investor.account !== connectedAccount ? (
-              <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
-
-                {isLoading ? (
-                  <Loading />
-                ) : (
-                  <>
-                    {errorMsg && (
-                      <p className='text-left text-red-600 w-full text-sm'>
-                        {errorMsg}
-                      </p>
-                    )}
-                    <Input placeholder="Amount (ETH)" name="amount" type="number" handleChange={handleChange} maximum={"0.1"}/>
-      
-                    <div className="h-[1px] w-full bg-gray-400 my-2" />
-                  
-                    <button type="button" onClick={handleSubmit} className='text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer'>
-                      Invest
-                    </button>
-                  </>
-                )}
-
-              </div>
+            {investorLoading ? (
+              <Loading />
             ) : (
-              <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
+              connectedAccountIsInvestor ? (
+                <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
+  
+                  {isLoading ? (
+                    <Loading />
+                  ) : (
+                    <>
+                      {errorMsg && (
+                        <p className='text-left text-red-600 w-full text-sm'>
+                          {errorMsg}
+                        </p>
+                      )}
+                      <Input placeholder="Amount (ETH)" name="amount" type="number" handleChange={handleChange} maximum={"0.1"}/>
+        
+                      <div className="h-[1px] w-full bg-gray-400 my-2" />
+                    
+                      <button type="button" onClick={handleSubmit} className='text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer'>
+                        Invest
+                      </button>
+                    </>
+                  )}
+  
+                </div>
+              ) : (
+                <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
+  
+                  <p className='text-white text-base font-semibold text-md'>
+                      Congratulations!
+                  </p>
+                  <p className='text-white text-sm'>
+                    You successfully participated in ICO!
+                  </p>
 
-                ALREADY INVESTED
+                  <div className="h-[1px] w-full bg-gray-400 my-2 mt-3 mb-5" />
 
-              </div>
+                  <h1 className='text-white text-xl'>
+                    Your allocation is:
+                  </h1>
+                  <h1 className='text-white text-xl'>
+                    {ethers.utils.formatEther(investor.EXMAllocation)} KYT
+                  </h1>
+
+                  <br />
+                  
+                  <p className='text-white text-sm align-left w-full'>
+                    Import token into your wallet to see your balance:
+                  </p>
+
+                  <p className='text-white text-sm p-5'>
+                    0xb3034b773d0f6a37ec2e3b189cd564d2359f1111
+                  </p>
+
+
+  
+                </div>
+              )
             )}
+            
           </div>
 
         </div>

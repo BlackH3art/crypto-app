@@ -7,7 +7,7 @@ You can find smart contract code in this repo: https://github.com/BlackH3art/cry
 
 ![](images\app.png "main page")
 
-It's a tutorial based application which in I implemented:
+It's a tutorial based application in which I implemented:
 - ERC20 custom KYT Token 
 - Public Sale of this KYT token
 

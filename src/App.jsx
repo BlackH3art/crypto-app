@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // components
 import Welcome from './components/Welcome/Welcome';
@@ -21,6 +21,11 @@ const App = () => {
             <Route exact path="/" element={<Welcome />}/>
 
             <Route exact path="/ico" element={<Ico />} />
+
+            <Route
+              path="*"
+              element={<Navigate to="/" />}
+            />
               
           </Routes>
           {/* <Welcome /> */}

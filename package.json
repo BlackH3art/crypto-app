@@ -1,6 +1,7 @@
 {
   "name": "crypto-app",
-  "version": "0.0.0",
+  "homepage": "https://krypttoken.com/",
+  "version": "0.1.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

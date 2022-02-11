@@ -1,4 +1,5 @@
 import logo from '../../../images/logo.png';
+import { FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
 
@@ -20,6 +21,9 @@ const Footer = () => {
         <div className="flex justify-center items-center flex-col mt-5">
           <p className="text-white text-sm text-center">Come join us</p>
           <p className="text-white text-sm text-center">fake-mail@fake.com</p>
+          <a className='pt-5' href="https://github.com/BlackH3art/crypto-app" target="_blank" rel="noopener noreferrer">
+            <FaGithub color="white" size="32px" />
+          </a>
         </div>
 
         <div className="sm:w-[90%] w-full h-[0.25px] bg-gray-400 mt-5" />
